@@ -10,6 +10,8 @@ function App() {
   const [contract, setContract] = useState(null);
   const [bets, setBets] = useState([]);
   const [filter, setFilter] = useState("all");
+  const [loading, setLoading] = useState(true);      // 🔄 stan ładowania
+  const [error, setError] = useState(null);          // ❌ stan błędu
 
   useEffect(() => {
     const loadContract = async () => {
@@ -33,6 +35,9 @@ function App() {
 
   const fetchBets = async () => {
     if (!contract) return;
+    setLoading(true);
+    setError(null);
+
     try {
       const nextId = await contract.nextBetId();
       const all = [];
@@ -43,6 +48,9 @@ function App() {
       setBets(all);
     } catch (err) {
       console.error("fetchBets failed", err);
+      setError("❌ Nie udało się załadować zakładów. Spróbuj ponownie.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -77,13 +85,15 @@ function App() {
   return (
     <div style={{ padding: "2rem", fontFamily: "sans-serif" }}>
       <h1>PEPUBet V3 💥</h1>
+
       {!account ? (
         <button onClick={connectWallet}>🔌 Połącz portfel</button>
       ) : (
         <p>✅ Połączono jako: {account}</p>
       )}
-<h1 style={{ textAlign: 'center', marginTop: '20px' }}>🎲 Lista zakładów</h1>
-      <h2>Zakłady</h2>
+
+      <h1 style={{ textAlign: 'center', marginTop: '20px' }}>🎲 Lista zakładów</h1>
+
       <label>
         Filtr:
         <select value={filter} onChange={(e) => setFilter(e.target.value)}>
@@ -93,7 +103,14 @@ function App() {
         </select>
       </label>
 
-      {filteredBets.map((b, i) => {
+      {/* 🔄 Loader */}
+      {loading && <p>⏳ Ładowanie zakładów z blockchaina...</p>}
+
+      {/* ❌ Błąd */}
+      {error && <p style={{ color: 'red' }}>{error}</p>}
+
+      {/* ✅ Lista zakładów */}
+      {!loading && !error && filteredBets.map((b, i) => {
         const isWaiting = b.bettor2 === ethers.constants.AddressZero;
         const isNotOwner = account && b.bettor1.toLowerCase() !== account.toLowerCase();
         const canJoin = !b.resolved && isWaiting && isNotOwner;
