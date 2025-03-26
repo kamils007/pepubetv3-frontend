@@ -4,6 +4,31 @@ import abi from "./abi.json";
 
 const CONTRACT_ADDRESS = "0x6298103797015ae4fc09B03d410ee7d5a63d1334";
 const PUBLIC_RPC = "https://ethereum-sepolia.publicnode.com";
+function Spinner() {
+  return (
+    <div style={{ textAlign: 'center', margin: '2rem' }}>
+      <div style={{
+        margin: '0 auto',
+        width: '40px',
+        height: '40px',
+        border: '5px solid #ccc',
+        borderTop: '5px solid #333',
+        borderRadius: '50%',
+        animation: 'spin 1s linear infinite'
+      }} />
+
+      <p>Ładowanie zakładów z blockchaina...</p>
+
+      <style>
+        {`@keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }`}
+      </style>
+    </div>
+  );
+}
+
 
 function App() {
   const [account, setAccount] = useState(null);
@@ -104,7 +129,8 @@ function App() {
       </label>
 
       {/* 🔄 Loader */}
-      {loading && <p>⏳ Ładowanie zakładów z blockchaina...</p>}
+      {loading && <Spinner />}
+
 
       {/* ❌ Błąd */}
       {error && <p style={{ color: 'red' }}>{error}</p>}
