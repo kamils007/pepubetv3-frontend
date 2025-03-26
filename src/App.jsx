@@ -82,7 +82,7 @@ function App() {
       ) : (
         <p>✅ Połączono jako: {account}</p>
       )}
-
+<h1 style={{ textAlign: 'center', marginTop: '20px' }}>🎲 Lista zakładów</h1>
       <h2>Zakłady</h2>
       <label>
         Filtr:
