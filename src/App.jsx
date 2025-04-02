@@ -53,6 +53,8 @@ function App() {
   const [filter, setFilter] = useState("all");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [pepuPrice, setPepuPrice] = useState(null);
+
 
   const currentNetwork = NETWORKS[networkKey];
 
@@ -62,9 +64,30 @@ function App() {
     setContract(readContract);
   };
 
+  async function fetchPepuPrice() {
+    const url = 'https://api.coingecko.com/api/v3/simple/price?ids=pepe-unchained&vs_currencies=usd';
+
+    try {
+      const response = await fetch(url);
+      const data = await response.json();
+      const price = data['pepe-unchained'].usd;
+      setPepuPrice(price);
+    } catch (error) {
+      console.error("Błąd pobierania ceny:", error);
+      setPepuPrice(null);
+    }
+  }
+
   useEffect(() => {
     loadContract();
   }, [networkKey]);
+
+  useEffect(() => {
+    fetchPepuPrice();
+    const interval = setInterval(fetchPepuPrice, 10000);
+    return () => clearInterval(interval);
+  }, []);
+  
 
   const connectWallet = async () => {
     if (!window.ethereum) return alert("Zainstaluj MetaMask");
@@ -157,6 +180,12 @@ function App() {
   return (
     <div style={{ padding: "2rem", fontFamily: "sans-serif" }}>
       <h1>PEPUBet V3 💥</h1>
+      <p>
+  {pepuPrice !== null
+    ? `📈 Cena PEPU: $${pepuPrice.toFixed(4)}`
+    : '⏳ Ładowanie ceny PEPU...'}
+</p>
+
 
       <div style={{ marginBottom: "1rem" }}>
         <label>
