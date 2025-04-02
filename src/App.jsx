@@ -185,6 +185,8 @@ function App() {
         </select>
       </label>
 
+      <h1 style={{ textAlign: 'center', marginTop: '20px' }}>Cena PEPU</h1>
+
       {loading && <Spinner />}
       {error && <p style={{ color: 'red' }}>{error}</p>}
 
